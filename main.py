@@ -90,18 +90,16 @@ class DenseMatrix(Matrix):
         self.shape = shape
         self.SparseMatrix = csr_matrix((self.data, (row_ind, col_ind)), shape).todense()
     
-    def multiply_by_scalar(self,scalar):
-        data = [value * scalar for value in self.data]    #pas ouf la strat, à revoir
-        return csr_matrix((data, (self.row_ind, self.col_ind)), self.shape)
+    def multiply_by_scalar(self, scalar):
+        result_data = self.data * scalar
+        return DenseMatrix(result_data)
     
     def solve_system(self,target):
         try:
             result = linalg.solve(self.data, target)
             return result
-        except ValueError:
-            return "matrix is not squared"
-        except:
-            return "det = 0 "
+        except numpy.linalg.LinAlgError as e:
+            return str(e)
 
     def __str__(self):
         return str(self.SparseMatrix)
