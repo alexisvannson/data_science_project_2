@@ -8,27 +8,29 @@ from scipy.linalg import svd
 class Matrix:
     def __init__(self,data):
         self.data = numpy.array(data)
-
-    def multiply_by_scalar(self,scalar):
-        self.data = self.data * scalar
-        return numpy.array(self.data)
+# The following methods return a new Matrix instance with the result
+    def multiply_by_scalar(self, scalar):
+        result = self.data * scalar
+        return Matrix(result)
     
-    def matrix_vector_multiplication(self,vector):
-        self.data = numpy.dot(self.data,vector)
-        return numpy.array(self.data)
-
-    def matrix_matrix_multiplication(self,matrix_b):
-        self.data = numpy.dot(self.data,matrix_b)
-        return numpy.array(self.data)
+    def matrix_vector_multiplication(self, vector):
+        result = numpy.dot(self.data, vector)
+        return Matrix(result) 
     
-    def add_matrices(self,matrix_b):
-        self.data = numpy.add(self.data,matrix_b)
-        return numpy.array(self.data)
+    def matrix_matrix_multiplication(self, matrix_b):
+        matrix_b = numpy.array(matrix_b)
+        result = numpy.dot(self.data, matrix_b)
+        return Matrix(result)
     
-    def difference_of_matrices(self,matrix_b):
-        matrix_b = -1* numpy.array(matrix_b)
-        self.data = numpy.add(self.data,matrix_b)
-        return numpy.array(self.data)
+    def add_matrices(self, matrix_b):
+        matrix_b = numpy.array(matrix_b)
+        result = numpy.add(self.data, matrix_b)
+        return Matrix(result)
+    
+    def difference_of_matrices(self, matrix_b):
+        matrix_b = numpy.array(matrix_b)
+        result = numpy.subtract(self.data, matrix_b)
+        return Matrix(result)
     
     def get_eigenvalues(self):
         eigenvalues, _ = scipy.linalg.eig(self.data)
