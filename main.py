@@ -83,10 +83,6 @@ class SparseMatrix(Matrix):
 class DenseMatrix(Matrix):
     def __init__(self,data,row_ind, col_ind, shape):
         Matrix.__init__(self,data)
-        self.row_ind = row_ind
-        self.col_ind = col_ind
-        self.shape = shape
-        self.SparseMatrix = csr_matrix((self.data, (row_ind, col_ind)), shape).todense()
     
     def multiply_by_scalar(self, scalar):
         result_data = self.data * scalar
@@ -100,7 +96,7 @@ class DenseMatrix(Matrix):
             return str(e)
 
     def __str__(self):
-        return str(self.SparseMatrix)
+        return str(self.data)
     
 
 # Creating data for SparseMatrix and DenseMatrix
