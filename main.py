@@ -47,8 +47,6 @@ class Matrix:
     def __str__(self):
         return str(numpy.array(self.data))
     
-
-
 class SparseMatrix(Matrix):
     def __init__(self,data,row_ind, col_ind, shape):
         Matrix.__init__(self,data)
@@ -105,28 +103,45 @@ class DenseMatrix(Matrix):
         return str(self.SparseMatrix)
     
 
+# Creating data for SparseMatrix and DenseMatrix
+data_sparse = [1, 2, 3, 4]  
+rows = [0, 1, 2, 3]  
+cols = [1, 2, 3, 4]  
+shape = (5, 5)  
 
-data = [1,87,64,12,23]
-data2 = [1,870,6,2,43]
-row_ind = [0,0,2,3,4]
-col_ind = [0,1,3,1,2]
-shape= (5,5)
-A = SparseMatrix(data,row_ind, col_ind, shape)
-B = DenseMatrix(data2,row_ind, col_ind, shape)
-#A.__str__()
-#print(A.sparcity())
-#print(A.SparseMatrix)
-#print (B.multiply_by_scalar(1000).todense())
-matrix_b = [[0,1,1,1,3],[4,2,2,1,3],[4,2,2,1,3],[4,2,2,1,3],[4,2,2,1,3]]
-B.add_matrices(matrix_b)
+# DenseMatrix instance with random data
+data_dense = numpy.random.rand(5, 5)  
+
+# Instantiate SparseMatrix and DenseMatrix
+A_sparse = SparseMatrix(data_sparse, rows, cols, shape)
+A_dense = DenseMatrix(data_dense)
+
+print(f"Sparse Matrix:\n{A_sparse} \n Dense Matrix:\n {A_dense}")
 
 
-#1.3
-# eigenvalues squared matrix, SVD decompsition, using Scipy 
+# Scalar multiplication
+scalar = 2
+scaled_matrix = A_dense.multiply_by_scalar(scalar)
+print("\nScaled Dense Matrix by scalar", scalar, ":\n", scaled_matrix)
 
-A1 = DenseMatrix(data2,row_ind, col_ind, shape)
-print(A1.get_eigenvalues())
-print(A1.get_eigenvectors())
+# Matrix-vector multiplication
+vector = numpy.array([1, 2, 3, 4, 5])
+matrix_vector_product = A_dense.matrix_vector_multiplication(vector)
+print("\nMatrix-Vector Multiplication Result:\n", matrix_vector_product)
+
+# Matrix-matrix multiplication
+matrix_b = numpy.random.rand(5, 5)  # Random matrix B for multiplication
+matrix_matrix_product = A_dense.matrix_matrix_multiplication(matrix_b)
+print("\nMatrix-Matrix Multiplication Result:\n", matrix_matrix_product)
+
+
+# Computing eigenvalues
+eigenvalues = A_dense.get_eigenvalues()
+print("\nEigenvalues of Dense Matrix:\n", eigenvalues)
+
+# Performing SVD
+U, s, Vh = A_dense.SingularValueDecomposition()
+print("\nSVD of Dense Matrix:\nU:\n", U, "\nS:\n", s, "\nVh:\n", Vh)
 
 
 
