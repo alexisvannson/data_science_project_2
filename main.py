@@ -1,143 +1,56 @@
-import numpy
-from scipy.sparse import csr_matrix
+import numpy as np
 import scipy
 from scipy import linalg
 from scipy.linalg import svd
-
-# 1.1
-class Matrix:
-    def __init__(self,data):
-        self.data = numpy.array(data)
-# The following methods return a new Matrix instance with the result
-    def multiply_by_scalar(self, scalar):
-        result = self.data * scalar
-        return Matrix(result)
-    
-    def matrix_vector_multiplication(self, vector):
-        result = numpy.dot(self.data, vector)
-        return Matrix(result) 
-    
-    def matrix_matrix_multiplication(self, matrix_b):
-        matrix_b = numpy.array(matrix_b)
-        result = numpy.dot(self.data, matrix_b)
-        return Matrix(result)
-    
-    def add_matrices(self, matrix_b):
-        matrix_b = numpy.array(matrix_b)
-        result = numpy.add(self.data, matrix_b)
-        return Matrix(result)
-    
-    def difference_of_matrices(self, matrix_b):
-        matrix_b = numpy.array(matrix_b)
-        result = numpy.subtract(self.data, matrix_b)
-        return Matrix(result)
-    
-    def get_eigenvalues(self):
-        eigenvalues, _ = scipy.linalg.eig(self.data)
-        return eigenvalues
-    
-    def get_eigenvectors(self):
-        _, eigenvectors = scipy.linalg.eig(self.data)
-        return eigenvectors
-    
-    def SingularValueDecomposition(self):
-        U, s, Vh = svd(self.data)
-        return U, s, Vh   
-
-    def __str__(self):
-        return str(numpy.array(self.data))
-    
-class SparseMatrix(Matrix):
-    def __init__(self,data,row_ind, col_ind, shape):
-        Matrix.__init__(self,data)
-        self.row_ind = row_ind
-        self.col_ind = col_ind
-        self.shape = shape
-        self.sparse_matrix = csr_matrix((self.data, (row_ind, col_ind)), shape)
-
-    def sparcity(self):
-        non_zero_elements = self.sparse_matrix.size
-        rows,lines = self.shape
-        total_elements = rows * lines
-        return non_zero_elements/ total_elements
-
-    def matrix_matrix_multiplication(self,sparse_matrix_b):  #à refaire à la main 
-        return self.sparse_matrix * sparse_matrix_b
+from matrix_classes import SparseMatrix, DenseMatrix 
+from performance import generate_sparse_matrix_data
 
 
-    def add_matrices(self,sparse_matrix_b):#à refaire à la main
-        return self.sparse_matrix + sparse_matrix_b
+size = 50
+non_zero_elements = 25  
+data_sparse_a, indices_sparse_a = generate_sparse_matrix_data(size, non_zero_elements)
+data_sparse_b, indices_sparse_b = generate_sparse_matrix_data(size, non_zero_elements)
 
-    def difference_of_matrices(self,sparse_matrix_b):#à refaire à la main
-        return self.sparse_matrix - sparse_matrix_b
-   
-    def solve_system(self,target):
-        result = scipy.sparse.linalg.spsolve(self.data, target, permc_spec=None, use_umfpack=True)
-        return result
-
-    def __str__(self):
-        return str(csr_matrix((self.data, (self.row_ind, self.col_ind)), self.shape))
+A_sparse = SparseMatrix(data_sparse_a, indices_sparse_a, (size, size))
+B_sparse = SparseMatrix(data_sparse_b, indices_sparse_b, (size, size))
 
 
+data_dense_a = np.random.rand(50, 50)
+data_dense_b = np.random.rand(50, 50)
 
-class DenseMatrix(Matrix):
-    def __init__(self,data,row_ind, col_ind, shape):
-        Matrix.__init__(self,data)
-    
-    def multiply_by_scalar(self, scalar):
-        result_data = self.data * scalar
-        return DenseMatrix(result_data)
-    
-    def solve_system(self,target):
-        try:
-            result = linalg.solve(self.data, target)
-            return result
-        except numpy.linalg.LinAlgError as e:
-            return str(e)
+A_dense = DenseMatrix(data_dense_a)
+B_dense = DenseMatrix(data_dense_b)
 
-    def __str__(self):
-        return str(self.data)
-    
 
-# Creating data for SparseMatrix and DenseMatrix
-data_sparse = [1, 2, 3, 4]  
-rows = [0, 1, 2, 3]  
-cols = [1, 2, 3, 4]  
-shape = (5, 5)  
+# Addition
+add_sparse_result = A_sparse.add_sparse_matrices(B_sparse)
+print("Addition Result (Sparse):", add_sparse_result)
 
-# DenseMatrix instance with random data
-data_dense = numpy.random.rand(5, 5)  
+# Difference
+diff_sparse_result = A_sparse.difference_of_sparse_matrices(B_sparse)
+print("Difference Result (Sparse):", diff_sparse_result)
 
-# Instantiate SparseMatrix and DenseMatrix
-A_sparse = SparseMatrix(data_sparse, rows, cols, shape)
-A_dense = DenseMatrix(data_dense)
-
-print(f"Sparse Matrix:\n{A_sparse} \n Dense Matrix:\n {A_dense}")
-
+# Multiplication - Note: This might take some time due to the naive implementation
+mult_sparse_result = A_sparse.multiply_sparse_matrices(B_sparse)
+print("Multiplication Result (Sparse):", mult_sparse_result)
 
 # Scalar multiplication
-scalar = 2
-scaled_matrix = A_dense.multiply_by_scalar(scalar)
-print("\nScaled Dense Matrix by scalar", scalar, ":\n", scaled_matrix)
+scalar_result = A_dense.multiply_by_scalar(2)
+print("Scalar Multiplication Result (Dense):\n", scalar_result)
 
 # Matrix-vector multiplication
-vector = numpy.array([1, 2, 3, 4, 5])
-matrix_vector_product = A_dense.matrix_vector_multiplication(vector)
-print("\nMatrix-Vector Multiplication Result:\n", matrix_vector_product)
+vector = np.random.rand(50)
+matrix_vector_result = A_dense.matrix_vector_multiplication(vector)
+print("Matrix-Vector Multiplication Result (Dense):\n", matrix_vector_result)
 
 # Matrix-matrix multiplication
-matrix_b = numpy.random.rand(5, 5)  # Random matrix B for multiplication
-matrix_matrix_product = A_dense.matrix_matrix_multiplication(matrix_b)
-print("\nMatrix-Matrix Multiplication Result:\n", matrix_matrix_product)
+matrix_matrix_result = A_dense.matrix_matrix_multiplication(B_dense.data)  # Pass numpy array directly
+print("Matrix-Matrix Multiplication Result (Dense):\n", matrix_matrix_result)
 
-
-# Computing eigenvalues
+# # Computing eigenvalues
 eigenvalues = A_dense.get_eigenvalues()
 print("\nEigenvalues of Dense Matrix:\n", eigenvalues)
 
-# Performing SVD
+# # Performing SVD
 U, s, Vh = A_dense.SingularValueDecomposition()
 print("\nSVD of Dense Matrix:\nU:\n", U, "\nS:\n", s, "\nVh:\n", Vh)
-
-
-
