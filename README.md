@@ -92,3 +92,13 @@ python performance.py
 ```
 
 This script highlights efficiency considerations, aiding in the selection and application of matrix operations.
+
+###Part 2
+This script utilizes environment variables so when executing the code it must be in the following format:
+python main.py 0 10 10000 200 5 0.9
+The first number corresponds to the minimum values possible in the matrix
+The second number corresponds to the Maximum values possible in the matrix
+The third number corresponds to the number of rows in the matrix(Must be above 10000 and >> number of rows)
+The fourth number corresponds to the number of columns in the matrix
+The fifth number corresponds to the threshold when converting the regular matrix to the binary rating matrix(ie if the value is greater than 5 the value becomes 1)
+The sixth number corresponds to the target percentage when calculating the number of singular Values
