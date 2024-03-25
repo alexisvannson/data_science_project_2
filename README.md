@@ -95,7 +95,9 @@ This script highlights efficiency considerations, aiding in the selection and ap
 
 ### Part 2
 This script utilizes environment variables so when executing the code it must be in the following format:
+```sh
 python main.py 0 10 10000 200 5 0.9
+```
 
 -The first number corresponds to the minimum values possible in the matrix
 
